@@ -1,18 +1,17 @@
 package ca.gobits.diff;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import org.junit.Test;
 
-
 public class DiffTest {
 
 	private static final String newLine = System.getProperty("line.separator");
 	
-	private Diff d = new Diff();
+	private Diff d = new DiffImpl();
 	
 	// test removes / add lines in middle
 	@Test
@@ -39,7 +38,8 @@ public class DiffTest {
 				;
 		
 		// when
-		d.diff(ps, s0, s1);
+		DiffResult dr = d.diffByLine(s0, s1);
+		d.diff(ps, dr);
 				
 		// then
 		String expected = "f1" + newLine
@@ -85,7 +85,8 @@ public class DiffTest {
 				;
 		
 		// when
-		d.diff(ps, s0, s1);
+		DiffResult dr = d.diffByLine(s0, s1);
+		d.diff(ps, dr);
 		
 		// then
 		String expected = "void func1()" + newLine
@@ -167,7 +168,8 @@ public class DiffTest {
 				;
 		
 		// when
-		d.diff(ps, s0, s1);
+		DiffResult dr = d.diffByLine(s0, s1);
+		d.diff(ps, dr);
 		
 		// then
 		String expected = 
@@ -210,5 +212,31 @@ public class DiffTest {
 		
 		String result = baos.toString();
 		assertEquals(expected, result);
+	}
+	
+	@Test
+	public void testDiffByChar01() {
+		// given
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+
+		String s0 = "test";
+		String s1 = "es";
+		
+		// when
+		DiffResult result = d.diffByChar(s0, s1);
+		d.diff(ps, result);
+		
+		// then
+		assertEquals(4, result.getList0().size());
+		assertEquals(2, result.getList1().size());
+		
+		String expected = "+ t" + newLine
+						+ "e" + newLine
+						+ "s" + newLine
+						+ "+ t" + newLine;
+		
+		String r = baos.toString();
+		assertEquals(expected, r);
 	}
 }
