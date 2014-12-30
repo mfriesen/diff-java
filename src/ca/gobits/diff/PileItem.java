@@ -10,11 +10,11 @@ public class PileItem<T> {
 	}
 
 	public T getItem() {
-		return item;
+		return this.item;
 	}
 
 	public PileItem<T> getLink() {
-		return link;
+		return this.link;
 	}
 
 	public void setLink(PileItem<T> link) {

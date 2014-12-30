@@ -23,12 +23,14 @@ public class PatienceSortTest {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(baos);
 		
-		List<Integer> ints = Arrays.asList(0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15);		
+		List<Integer> ints = Arrays.asList(Integer.valueOf(0), Integer.valueOf(8), Integer.valueOf(4), Integer.valueOf(12), 
+				Integer.valueOf(2), Integer.valueOf(10), Integer.valueOf(6), Integer.valueOf(14), Integer.valueOf(1), 
+				Integer.valueOf(9), Integer.valueOf(5), Integer.valueOf(13), Integer.valueOf(3), Integer.valueOf(11), Integer.valueOf(7), Integer.valueOf(15));		
 		
 		// when
-		List<Pile<PileItem<Integer>>> results = patience.sort(ints);
-		patience.debugPiles(ps, results);
-		List<Integer> longestSeq = patience.longestIncreasingSubsequence(results);
+		List<Pile<PileItem<Integer>>> results = this.patience.sort(ints);
+		this.patience.debugPiles(ps, results);
+		List<Integer> longestSeq = this.patience.longestIncreasingSubsequence(results);
 		
 		// then
 		assertEquals(6, results.size());

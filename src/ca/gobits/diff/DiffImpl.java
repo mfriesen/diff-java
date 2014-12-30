@@ -37,6 +37,7 @@ public class DiffImpl implements Diff {
 		}
 	}
 	
+	@Override
 	public void diff(PrintStream ps, DiffResult dr) {
 		
 		int i0 = 0, i1 = 0;
@@ -69,6 +70,7 @@ public class DiffImpl implements Diff {
 		}
 	}
 		
+	@Override
 	public DiffResult diffByLine(String s0, String s1) {
 		
 		List<DiffLine> list0 = createDiffByLine(s0);
@@ -77,6 +79,7 @@ public class DiffImpl implements Diff {
 		return diff(s0, s1, list0, list1);
 	}
 	
+	@Override
 	public DiffResult diffByChar(String s0, String s1) {
 		List<DiffLine> list0 = createDiffByChar(s0);
 		List<DiffLine> list1 = createDiffByChar(s1);
@@ -86,17 +89,17 @@ public class DiffImpl implements Diff {
 	
 	private DiffResult diff(String s0, String s1, List<DiffLine> list0, List<DiffLine> list1) {
 		
-		int start = matchFirstLines(list0, list1, 0, 0);
+		int start = matchFirst(list0, list1, 0, 0);
 
-		int end = matchLastLines(list0, list1, list0.size() - 1, list1.size() - 1);
+		int end = matchLast(list0, list1, list0.size() - 1, list1.size() - 1);
 		
 		Map<String, DiffLine> unique0 = uniqueLines(list0, start, end);
 		Map<String, DiffLine> unique1 = uniqueLines(list1, start, end);
 
 		List<DiffLine> common0 = findCommonLines(list1, unique0, unique1);
 		
-		List<Pile<PileItem<DiffLine>>> piles = patience.sort(common0);
-		List<DiffLine> subseq = patience.longestIncreasingSubsequence(piles);
+		List<Pile<PileItem<DiffLine>>> piles = this.patience.sort(common0);
+		List<DiffLine> subseq = this.patience.longestIncreasingSubsequence(piles);
 		
 		for (DiffLine df0 : subseq) {
 			DiffLine df1 = unique1.get(new String(df0.getSHA1()));
@@ -104,8 +107,8 @@ public class DiffImpl implements Diff {
 			
 			int pos0 = df0.getPos();
 			int pos1 = df1.getPos();
-			matchLastLines(list0, list1, pos0 - 1, pos1 - 1);
-			matchFirstLines(list0, list1, pos0 + 1, pos1 + 1);
+			matchLast(list0, list1, pos0 - 1, pos1 - 1);
+			matchFirst(list0, list1, pos0 + 1, pos1 + 1);
 		}
 		
 //		debug(list0);
@@ -115,7 +118,8 @@ public class DiffImpl implements Diff {
 		return new DiffResult(list0, list1);
 	}
 	
-	private int matchFirstLines(List<DiffLine> list0, List<DiffLine> list1, int start0, int start1) {
+	@Override
+	public int matchFirst(List<DiffLine> list0, List<DiffLine> list1, int start0, int start1) {
 		
 		while (start0 < list0.size() && start1 < list1.size()) {
 			
@@ -134,7 +138,8 @@ public class DiffImpl implements Diff {
 		return start0;
 	}	
 	
-	private int matchLastLines(List<DiffLine> list0, List<DiffLine> list1, int end0, int end1) {
+	@Override
+	public int matchLast(List<DiffLine> list0, List<DiffLine> list1, int end0, int end1) {
 		
 		int count = 0;
 		

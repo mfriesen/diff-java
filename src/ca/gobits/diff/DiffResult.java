@@ -13,10 +13,10 @@ public class DiffResult {
 	}
 
 	public List<DiffLine> getList0() {
-		return list0;
+		return this.list0;
 	}
 
 	public List<DiffLine> getList1() {
-		return list1;
+		return this.list1;
 	}
 }

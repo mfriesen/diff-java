@@ -13,7 +13,7 @@ public class DiffLine implements Comparable<DiffLine> {
 	}
 
 	public String getLine() {
-		return line;
+		return this.line;
 	}
 
 	public void setLine(String line) {
@@ -21,7 +21,7 @@ public class DiffLine implements Comparable<DiffLine> {
 	}
 
 	public byte[] getSHA1() {
-		return sha1;
+		return this.sha1;
 	}
 
 	public void setSHA1(byte[] sha1) {
@@ -29,7 +29,7 @@ public class DiffLine implements Comparable<DiffLine> {
 	}
 
 	public int getPos() {
-		return pos;
+		return this.pos;
 	}
 
 	public void setPos(int pos) {
@@ -37,19 +37,20 @@ public class DiffLine implements Comparable<DiffLine> {
 	}
 
 	public int getMatch() {
-		return match;
+		return this.match;
 	}
 
 	public void setMatch(int match) {
 		this.match = match;
 	}
 
+	@Override
 	public String toString() {
-		return line + " pos: " + pos + " match: " + match;
+		return this.line + " pos: " + this.pos + " match: " + this.match;
 	}
 
 	@Override
 	public int compareTo(DiffLine o) {
-		return Integer.valueOf(pos).compareTo(Integer.valueOf(o.getPos()));
+		return Integer.valueOf(this.pos).compareTo(Integer.valueOf(o.getPos()));
 	}
 }

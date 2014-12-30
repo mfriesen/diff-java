@@ -38,8 +38,8 @@ public class DiffTest {
 				;
 		
 		// when
-		DiffResult dr = d.diffByLine(s0, s1);
-		d.diff(ps, dr);
+		DiffResult dr = this.d.diffByLine(s0, s1);
+		this.d.diff(ps, dr);
 				
 		// then
 		String expected = "f1" + newLine
@@ -85,8 +85,8 @@ public class DiffTest {
 				;
 		
 		// when
-		DiffResult dr = d.diffByLine(s0, s1);
-		d.diff(ps, dr);
+		DiffResult dr = this.d.diffByLine(s0, s1);
+		this.d.diff(ps, dr);
 		
 		// then
 		String expected = "void func1()" + newLine
@@ -168,8 +168,8 @@ public class DiffTest {
 				;
 		
 		// when
-		DiffResult dr = d.diffByLine(s0, s1);
-		d.diff(ps, dr);
+		DiffResult dr = this.d.diffByLine(s0, s1);
+		this.d.diff(ps, dr);
 		
 		// then
 		String expected = 
@@ -224,8 +224,8 @@ public class DiffTest {
 		String s1 = "es";
 		
 		// when
-		DiffResult result = d.diffByChar(s0, s1);
-		d.diff(ps, result);
+		DiffResult result = this.d.diffByChar(s0, s1);
+		this.d.diff(ps, result);
 		
 		// then
 		assertEquals(4, result.getList0().size());
