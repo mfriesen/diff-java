@@ -11,15 +11,17 @@ public class ConversionStatus {
 	public ConversionStatus() {		
 	}
 
-	public void addUsedVariable(String name) {
-		this.usedVariables.add(name);
-	}
+//	public void addUsedVariable(String name) {
+//		this.usedVariables.add(name);
+//	}
 
 	public String getNextVariableName(String name) {
 		
 		if (this.usedVariables.contains(name)) {
 			name = name + this.uniqueKey;
 			this.uniqueKey++;
+		} else {
+			this.usedVariables.add(name);
 		}
 		
 		return name;

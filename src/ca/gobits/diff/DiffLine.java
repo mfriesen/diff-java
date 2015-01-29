@@ -2,10 +2,10 @@ package ca.gobits.diff;
 
 public class DiffLine implements Comparable<DiffLine> {
 
-	private String line;
-	private byte[] sha1;
-	private int pos;
-	private int match;
+	private String 	line;
+	private int 	match;
+	private int 	pos;
+	private byte[] 	sha1;
 	
 	public DiffLine() {
 		this.pos = -1;
