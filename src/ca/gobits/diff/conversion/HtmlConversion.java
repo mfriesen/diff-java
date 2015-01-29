@@ -20,13 +20,12 @@ public class HtmlConversion implements Conversion {
 
 	private static Diff d = new DiffImpl();
 	
-	private static Pattern titleTag = Pattern.compile("<(title)>(.*)</title>");
 	private static Pattern attributeTag = Pattern.compile("<[\\w]*(.*)>");
 	private static Pattern attributeKeyValue = Pattern.compile("(\\w+)=['\"]?([^'\"]+)['\"]?");
 //	private static final Pattern emptyLine = Pattern.compile("^\\s*$");
 	
 	// regular html tag
-	private static Pattern attributeTag2 = Pattern.compile("<([^>]*)>([^>]*)</?([^>]*)>");
+	private static Pattern htmlTag = Pattern.compile("<([^>]*)>([^>]*)</?([^>]*)>");
 	
 	@Override
 	public String pre(String s) {
@@ -44,8 +43,8 @@ public class HtmlConversion implements Conversion {
 //		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //		PrintStream ps = new PrintStream(baos);
 		
-		String s0 = new String(Files.readAllBytes(Paths.get("data/index1-win.html")));
-		String s1 = new String(Files.readAllBytes(Paths.get("data/index2-win.html")));
+		String s0 = new String(Files.readAllBytes(Paths.get("data/index1.html")));
+		String s1 = new String(Files.readAllBytes(Paths.get("data/index2.html")));
 				
 		s0 = formatHtml(s0);
 		s1 = formatHtml(s1);
@@ -54,10 +53,14 @@ public class HtmlConversion implements Conversion {
 		List<DiffLine> l0 = result.getList0();
 		List<DiffLine> l1 = result.getList1();
 
-		List<DiffLine> main = l0.size() > l1.size() ? l0 : l1;
-		List<DiffLine> compare = l0.size() > l1.size() ? l1 : l0;
-
-		List<ConversionDiffLine> topDiffs = createTopConversionDiffLines(l0, l1);
+		int top = findTopMatch(l0, l1);
+		int bottom = findBottomMatch(l0, l1);
+		
+		System.out.println ("TOP: " + top + " BOTTOM: " + bottom);
+//		List<DiffLine> main = l0.size() > l1.size() ? l0 : l1;
+//		List<DiffLine> compare = l0.size() > l1.size() ? l1 : l0;
+//
+//		List<ConversionDiffLine> topDiffs = createTopConversionDiffLines(l0, l1);
 		
 //		createTemplate(main, compare);
 //		for (DiffLine dl : l0) {
@@ -85,6 +88,40 @@ public class HtmlConversion implements Conversion {
 //		System.out.println(r);
 	}
 	
+	private static int findTopMatch(List<DiffLine> l0, List<DiffLine> l1) {
+		
+		int pos = 0;
+		
+		ConversionStatus cs = new ConversionStatus();
+		
+		for (int i = 0; i < l0.size(); i++) {
+
+			DiffLine d0 = l0.get(i);
+			
+			if (d0.getMatch() != i) {
+				
+				DiffLine d1 = l1.get(i);
+				
+				List<ConversionVariable> vars = checkForMatchWithVariables(cs, d0.getLine(), d1.getLine());
+				
+				if (vars.isEmpty()) {
+//					System.out.println (d0.getPos() + " " + d0.getLine());
+//					System.out.println (d1.getPos() + " " + d1.getLine());
+					break;
+				}	
+			}
+		
+			pos = i;
+		}
+		
+		return pos;
+	}
+
+	private static int findBottomMatch(List<DiffLine> l0, List<DiffLine> l1) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	private static List<ConversionDiffLine> createTopConversionDiffLines(List<DiffLine> l0, List<DiffLine> l1) {
 
 		List<ConversionDiffLine> list = new ArrayList<ConversionDiffLine>();
@@ -176,7 +213,7 @@ public class HtmlConversion implements Conversion {
 		
 		int match = -1;
 		
-		Matcher m = attributeTag2.matcher(ss);
+		Matcher m = htmlTag.matcher(ss);
 		
 		if (m.find(pos)) {
 			
@@ -188,12 +225,6 @@ public class HtmlConversion implements Conversion {
 		}
 		
 		return match;
-//		Matcher m = attributeTag2.matcher(s);
-//		while (m.find()) {
-//			System.out.println ("COUNT: " + m.group(1) + "||" + m.group(2) + "||" + m.group(3));
-//		}
-		
-//		return false;
 	}
 
 	private static Template createTemplate3(List<DiffLine> list0, List<DiffLine> list1) {
@@ -428,7 +459,7 @@ public class HtmlConversion implements Conversion {
 
 	static List<ConversionVariable> checkForMatchWithVariables(ConversionStatus cs, String s0, String s1) {
 		
-		List<ConversionVariable> vars = checkForRegexMatchWithVariables(s0, s1, titleTag);
+		List<ConversionVariable> vars = checkForRegexMatchWithVariables(s0, s1, htmlTag);
 
 		if (vars.isEmpty()) {
 			vars = checkForRegexMatchWithVariables(s0, s1, attributeTag, attributeKeyValue);
@@ -539,10 +570,14 @@ public class HtmlConversion implements Conversion {
 	static ConversionVariable createVar(Matcher m0, Matcher m1) {
 		
 		ConversionVariable var = null;
+		int c0 = m0.groupCount();
+		int c1 = m1.groupCount();
 		
-		if (m0.groupCount() == 2 && m1.groupCount() == 2) {
+		if (c0 > 1 && c0 == c1) {
 			
-			var = createVar(m0.group(1), m0.group(2));
+			if (c0 == 2 || (c0 == 3 && m0.group(1).equals(m1.group(3)))) {
+				var = createVar(m0.group(1), m0.group(2));
+			}
 		}
 
 		return var;
