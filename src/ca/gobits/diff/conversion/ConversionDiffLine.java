@@ -1,28 +1,33 @@
 package ca.gobits.diff.conversion;
 
-import java.util.Collections;
-import java.util.List;
-
 import ca.gobits.diff.DiffLine;
 
 public class ConversionDiffLine {
-
+	
+	private boolean isComment;
 	private DiffLine diffLine;
-	private List<ConversionVariable> variables = Collections.emptyList();
 	
 	public ConversionDiffLine(DiffLine diffLine) {
 		this.diffLine = diffLine;
+	}
+
+	public boolean isComment() {
+		return this.isComment;
+	}
+
+	public void setComment(boolean isComment) {
+		this.isComment = isComment;
 	}
 
 	public DiffLine getDiffLine() {
 		return this.diffLine;
 	}
 
-	public List<ConversionVariable> getVariables() {
-		return this.variables;
+	public String getLine() {
+		return this.diffLine.getLine();
 	}
 
-	public void setVariables(List<ConversionVariable> variables) {
-		this.variables = variables;
+	public int getMatch() {
+		return this.diffLine.getMatch();
 	}
 }

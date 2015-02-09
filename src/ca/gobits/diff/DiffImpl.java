@@ -115,8 +115,7 @@ public class DiffImpl implements Diff {
 		}
 		
 		longestCommonSubsequenceUnmatchedLines(list0, list1);
-//		matchSimilarUnmatchedLines(list0, list1);
-		
+				
 		return new DiffResult(list0, list1);
 	}
 
