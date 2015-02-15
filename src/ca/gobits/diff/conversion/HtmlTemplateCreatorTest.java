@@ -1,7 +1,8 @@
 package ca.gobits.diff.conversion;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -15,12 +16,11 @@ public class HtmlTemplateCreatorTest {
 	@Test
 	public void testCheckForMatchWithVariables01() {
 		// given
-		ConversionStatus cs = new ConversionStatus();
 		String s0 = "<link rel='shortlink1' href='http://localhost/?p=74337' />";
 		String s1 = "<link rel='shortlink2' href='http://localhost/?p=74336' />";
 		
 		// when
-		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(cs, s0, s1);
+		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(s0, s1);
 		
 		// then
 		assertEquals(2, result.size());
@@ -37,12 +37,11 @@ public class HtmlTemplateCreatorTest {
 	@Test
 	public void testCheckForMatchWithVariables02() {
 		// given
-		ConversionStatus cs = new ConversionStatus();
 		String s0 = "<link rel='shortlink' href='http://localhost/?p=74337' />";
 		String s1 = "<link rel='shortlink' href='http://localhost/?p=74336' />";
 		
 		// when
-		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(cs, s0, s1);
+		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(s0, s1);
 		
 		// then
 		assertEquals(1, result.size());
@@ -55,12 +54,11 @@ public class HtmlTemplateCreatorTest {
 	@Test
 	public void testCheckForMatchWithVariables03() {
 		// given
-		ConversionStatus cs = new ConversionStatus();
 		String s0 = "<title>Test #1</title>";
 		String s1 = "<title>Junk #2</title>";
 		
 		// when
-		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(cs, s0, s1);
+		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(s0, s1);
 		
 		// then
 		assertEquals(1, result.size());
@@ -73,12 +71,11 @@ public class HtmlTemplateCreatorTest {
 	@Test
 	public void testCheckForMatchWithVariables04() {
 		// given
-		ConversionStatus cs = new ConversionStatus();
 		String s0 = "<body class=\"single single-post postid-73887 single-format-standard\">";
 		String s1 = "<body class=\"single single-post postid-73889 single-format-standard\">";
 		
 		// when
-		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(cs, s0, s1);
+		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(s0, s1);
 		
 		// then
 		assertEquals(1, result.size());
@@ -91,12 +88,11 @@ public class HtmlTemplateCreatorTest {
 	@Test
 	public void testCheckForMatchWithVariables05() {
 		// given
-		ConversionStatus cs = new ConversionStatus();
 		String s0 = "<li><img src=\"http://engine/delicious.gif\" alt=\"del\" /> <a href=\"http://del.icio.us/post?url=http://localhost/74337/best-of-133/\" target=\"_blank\">del.icio.us</a></li>";
 		String s1 = "<li><img src=\"http://engine/delicious.gif\" alt=\"del\" /> <a href=\"http://del.icio.us/post?url=http://localhost/73887/git-132/\" target=\"_blank\">del.icio.us</a></li>";
 		
 		// when
-		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(cs, s0, s1);
+		List<ConversionVariable> result = this.creator.checkForMatchWithVariables(s0, s1);
 		
 		// then
 		assertEquals(1, result.size());
@@ -287,13 +283,12 @@ public class HtmlTemplateCreatorTest {
 		List<String> results = template.getLines();
 		
 		// then
-		assertEquals(6, results.size());
-		assertEquals("<html>", results.get(0));
-		assertEquals("<head></head>", results.get(1));
-		assertEquals("<body>", results.get(2));
-		assertEquals("{{ content }}", results.get(3));
-		assertEquals("</body>", results.get(4));
-		assertEquals("</html>", results.get(5));
+		assertEquals("<html>" + newLine
+				+ "<head></head>" + newLine
+				+ "<body>" + newLine
+				+ "{{ content }}" + newLine
+				+ "</body>" + newLine
+				+ "</html>" + newLine, join(results));
 	}
 	
 	// Same Template
@@ -308,18 +303,113 @@ public class HtmlTemplateCreatorTest {
 		List<String> results = template.getLines();
 		
 		// then
-		assertEquals(6, results.size());
-		assertEquals("<html>", results.get(0));
-		assertEquals("<head></head>", results.get(1));
-		assertEquals("<body>", results.get(2));
-		assertEquals("Simple", results.get(3));
-		assertEquals("</body>", results.get(4));
-		assertEquals("</html>", results.get(5));
+		assertEquals("<html>" + newLine
+				+ "<head></head>" + newLine
+				+ "<body>" + newLine
+				+ "Simple" + newLine
+				+ "</body>" + newLine
+				+ "</html>" + newLine, join(results));
 	}
 	
-	// test <head> variable.
+	// test <head> with <title> variable.
 	@Test
 	public void testCreate03() {
-		fail();
+		// given
+		String s0 = "<html><head><title>Best Of Title1</title></head><body>Simple1</body></html>";
+		String s1 = "<html><head><title>Best Of Title2</title></head><body>Simple2</body></html>";
+		
+		// when
+		Template template = this.creator.create(s0, s1);
+		List<String> results = template.getLines();
+		
+		// then
+		assertEquals("<html>" + newLine
+			+ "<head>" + newLine
+			+ "<title>{{ title }}</title>" + newLine
+			+ "</head>" + newLine
+			+ "<body>" + newLine
+			+ "{{ content }}" + newLine
+			+ "</body>" + newLine
+			+ "</html>" + newLine, join(results));
+	}
+
+	// test <head> with <link> variable.
+	@Test
+	public void testCreate04() {
+		// given
+		String s0 = "<html><head><link rel='shortlink1' href='http://localhost/?p=74337' /></head><body>Simple1</body></html>";
+		String s1 = "<html><head><link rel='shortlink2' href='http://localhost/?p=74338' /></head><body>Simple2</body></html>";
+		
+		// when
+		Template template = this.creator.create(s0, s1);
+		List<String> results = template.getLines();
+		
+		// then
+		assertEquals("<html>" + newLine
+			+ "<head>" + newLine
+			+ "<link rel='{{ shortlink1_rel }}' href='{{ shortlink1_href }}' />" + newLine
+			+ "</head>" + newLine
+			+ "<body>" + newLine
+			+ "{{ content }}" + newLine
+			+ "</body>" + newLine
+			+ "</html>" + newLine, join(results));
+	}
+	
+	// test with single line comment <!-- -->.
+	@Test
+	public void testCreate05() {
+		// given
+		String s0 = "<html><head></head><body><!-- load 2.34 -->Simple1</body></html>" + newLine;
+		String s1 = "<html><head></head><body><!-- load 5.34 -->Simple2</body></html>" + newLine;
+
+		// when
+		Template template = this.creator.create(s0, s1);
+		List<String> results = template.getLines();
+
+		// then
+		assertEquals(
+				"<html>" + newLine
+				+ "<head></head>" + newLine 
+				+ "<body>" + newLine
+				+ "<!-- load 2.34 -->" + newLine
+				+ "{{ content }}" + newLine 
+				+ "</body>" + newLine
+				+ "</html>" + newLine, join(results));
+	}
+
+	// test with <!-- -->.
+	@Test
+	public void testCreate06() {
+		// given
+		String s0 = "<html><head></head><body>Simple1</body></html>" + newLine
+				+ "<!-- load 2.34 -->";
+		String s1 = "<html><head></head><body>Simple2</body></html>" + newLine
+				+ "<!-- load 5.64 " + newLine
+				+ "sample data " + newLine
+				+ "-->";
+
+		// when
+		Template template = this.creator.create(s0, s1);
+		List<String> results = template.getLines();
+
+		// then
+		assertEquals(
+				"<html>" + newLine
+				+ "<head></head>" + newLine 
+				+ "<body>" + newLine
+				+ "{{ content }}" + newLine 
+				+ "</body>" + newLine
+				+ "</html>" + newLine
+				+ "<!-- load 2.34 -->" + newLine, join(results));
+	}
+		
+	private String join(Collection<String> strs) {
+		StringBuilder sb = new StringBuilder();
+		
+		for (String s : strs) {
+			sb.append(s + newLine);
+		}
+		
+		return sb.toString();
 	}
 }
