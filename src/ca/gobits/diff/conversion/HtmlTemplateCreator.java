@@ -57,8 +57,6 @@ public class HtmlTemplateCreator {
 		int match = 0;
 		boolean createVariables = true;
 
-		ConversionStatus cs = new ConversionStatus();
-
 		for (int i = 0; i < list0.size(); i++) {
 
 			ConversionDiffLine d0 = list0.get(i);
@@ -76,7 +74,7 @@ public class HtmlTemplateCreator {
 					if (d0.isComment() && d1.isComment()) {
 						vars = null;
 					} else {
-						vars = checkForMatchWithVariables(cs, l0, l1);
+						vars = checkForMatchWithVariables(l0, l1);
 					}
 				}
 
@@ -87,6 +85,14 @@ public class HtmlTemplateCreator {
 					break;
 				} 
 							
+				if (vars != null) {
+					
+					for (ConversionVariable var : vars) {
+						var = template.addVariable(var);
+						l0 = l0.replaceAll(Pattern.quote(var.getValue()), "{{ " + var.getName() + " }}");
+					}
+				}
+				
 				template.addLine(l0);
 				
 			} else {
@@ -282,8 +288,7 @@ public class HtmlTemplateCreator {
 		return s.equals("<!--");
 	}
 	
-	List<ConversionVariable> checkForMatchWithVariables(
-			ConversionStatus cs, String s0, String s1) {
+	List<ConversionVariable> checkForMatchWithVariables(String s0, String s1) {
 
 		List<ConversionVariable> vars = checkForRegexMatchWithVariables(s0, s1,
 				htmlTag);
