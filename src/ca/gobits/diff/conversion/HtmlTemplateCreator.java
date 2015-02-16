@@ -62,7 +62,7 @@ public class HtmlTemplateCreator {
 			ConversionDiffLine d0 = list0.get(i);
 			String l0 = d0.getLine();
 
-			if (d0.getDiffLine().getMatch() != i) {
+			if (!d0.isComment() && d0.getMatch() != i) {
 
 				List<ConversionVariable> vars = Collections.emptyList();
 
@@ -71,33 +71,23 @@ public class HtmlTemplateCreator {
 					ConversionDiffLine d1 = list1.get(i);
 					String l1 = d1.getLine();
 					
-					if (d0.isComment() && d1.isComment()) {
-						vars = null;
-					} else {
-						vars = checkForMatchWithVariables(l0, l1);
-					}
+					vars = checkForMatchWithVariables(l0, l1);
 				}
 
-				if (vars != null && vars.isEmpty()) {
+				if (vars.isEmpty()) {
 //					DiffLine d1 = l1.get(i);
 					// System.out.println (d0.getPos() + " " + d0.getLine());
 					// System.out.println (d1.getPos() + " " + d1.getLine());
 					break;
 				} 
-							
-				if (vars != null) {
 					
-					for (ConversionVariable var : vars) {
-						var = template.addVariable(var);
-						l0 = l0.replaceAll(Pattern.quote(var.getValue()), "{{ " + var.getName() + " }}");
-					}
-				}
-				
-				template.addLine(l0);
-				
-			} else {
-				template.addLine(d0.getLine());
-			}
+				for (ConversionVariable var : vars) {
+					var = template.addVariable(var);
+					l0 = l0.replaceAll(Pattern.quote(var.getValue()), "{{ " + var.getName() + " }}");
+				}				
+			} 
+			
+			template.addLine(l0);		
 
 			if (l0.startsWith("<body")) {
 				createVariables = false;
@@ -121,14 +111,20 @@ public class HtmlTemplateCreator {
 			while (i0 > 0 && i1 > 0) {
 	
 				ConversionDiffLine d0 = list0.get(i0);
-				ConversionDiffLine d1 = list1.get(i1);
-				
-				if (d0.isComment() && d1.isComment()) {
-					
-				} else if (d0.getMatch() != i1) {
+
+				if (!d0.isComment() && d0.getMatch() != i1) {
 	//				System.out.println (d0.getLine());
 	//				System.out.println (d1.getLine());
 					break;
+				}
+				
+				if (d0.isComment()) {
+					
+					while (i1 > 0 && list1.get(i1).isComment()) {						
+						i1--;
+					}
+					
+					i1 = i1 == 0 ? 0 : i1 + 1;
 				}
 				
 				template.addLine(template.getLines().size() - match, d0.getLine());
