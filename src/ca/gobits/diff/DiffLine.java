@@ -1,6 +1,6 @@
 package ca.gobits.diff;
 
-public class DiffLine implements Comparable<DiffLine> {
+public class DiffLine {
 
 	private String 	line;
 	private int 	match;
@@ -47,10 +47,5 @@ public class DiffLine implements Comparable<DiffLine> {
 	@Override
 	public String toString() {
 		return this.line + " pos: " + this.pos + " match: " + this.match;
-	}
-
-	@Override
-	public int compareTo(DiffLine o) {
-		return Integer.valueOf(this.pos).compareTo(Integer.valueOf(o.getPos()));
 	}
 }

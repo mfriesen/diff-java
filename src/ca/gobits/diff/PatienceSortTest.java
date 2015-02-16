@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
@@ -28,7 +29,13 @@ public class PatienceSortTest {
 				Integer.valueOf(9), Integer.valueOf(5), Integer.valueOf(13), Integer.valueOf(3), Integer.valueOf(11), Integer.valueOf(7), Integer.valueOf(15));		
 		
 		// when
-		List<Pile<PileItem<Integer>>> results = this.patience.sort(ints);
+		List<Pile<PileItem<Integer>>> results = this.patience.sort(ints, new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				return Integer.compare(o1.intValue(), o2.intValue());
+			}
+		});
+		
 		this.patience.debugPiles(ps, results);
 		List<Integer> longestSeq = this.patience.longestIncreasingSubsequence(results);
 		

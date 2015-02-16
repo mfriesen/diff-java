@@ -3,14 +3,15 @@ package ca.gobits.diff;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
 public class PatienceSort {
 
-	public <T extends Comparable<? super T>> List<Pile<PileItem<T>>> sort(List<T> source) {
+	public <T> List<Pile<PileItem<T>>> sort(List<T> source, Comparator<T> c) {
 		
-		PileComparator<T> comparator = new PileComparator<T>();
+		PileComparator<T> comparator = new PileComparator<T>(c);
 		List<Pile<PileItem<T>>> piles = new ArrayList<Pile<PileItem<T>>>();
 		
 		for (T t : source) {
@@ -40,7 +41,7 @@ public class PatienceSort {
 		return piles;
 	}
 	
-	public <T extends Comparable<? super T>> List<T> longestIncreasingSubsequence(List<Pile<PileItem<T>>> pile) {
+	public <T> List<T> longestIncreasingSubsequence(List<Pile<PileItem<T>>> pile) {
 		
 		int size = pile.size();
 		List<T> list = new ArrayList<T>(size);

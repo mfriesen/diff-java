@@ -99,7 +99,7 @@ public class DiffImpl implements Diff {
 
 		List<DiffLine> common0 = findCommonLines(list1, unique0, unique1);
 		
-		List<Pile<PileItem<DiffLine>>> piles = this.patience.sort(common0);
+		List<Pile<PileItem<DiffLine>>> piles = this.patience.sort(common0, DiffLinePosComparator.INSTANCE);
 		List<DiffLine> subseq = this.patience.longestIncreasingSubsequence(piles);
 		
 		for (DiffLine df0 : subseq) {
